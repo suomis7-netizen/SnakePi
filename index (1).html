@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A0E1A">
+<title>Pi Snake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pi-gold: #FFD166;
+    --pi-gold-dim: #A87C2A;
+    --pi-bg: #0A0E1A;
+    --pi-surface: #111827;
+    --pi-border: #1E2D4A;
+    --pi-green: #06D6A0;
+    --pi-red: #EF476F;
+    --pi-blue: #118AB2;
+    --pi-text: #E2E8F0;
+    --pi-muted: #64748B;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--pi-bg);
+    color: var(--pi-text);
+    font-family: 'Share Tech Mono', monospace;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  #app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px calc(10px + var(--safe-bottom));
+    position: relative;
+    overflow: hidden;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Subtle background glow */
+  #app::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 100% 50% at 50% 0%, rgba(6,214,160,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HUD ── */
+  .hud {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: var(--pi-surface);
+    border: 1px solid var(--pi-border);
+    border-radius: 12px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .hud-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pi-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--pi-gold);
+    line-height: 1;
+  }
+
+  .brand-text { display: flex; flex-direction: column; }
+  .brand-name {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--pi-text);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-size: 9px;
+    color: var(--pi-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .hud-scores {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .score-block { text-align: right; }
+  .score-label {
+    font-size: 9px;
+    color: var(--pi-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .score-val {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--pi-text);
+    line-height: 1.1;
+  }
+  .score-val.pi { color: var(--pi-gold); }
+
+  /* ── ARENA ── */
+  .arena-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--pi-border);
+    box-shadow: 0 0 0 1px rgba(6,214,160,0.06);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    z-index: 1;
+    margin: 8px 0;
+  }
+
+  #canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  /* ── OVERLAYS ── */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(10, 14, 26, 0.90);
+    z-index: 10;
+    padding: 20px;
+  }
+
+  .overlay.hidden { display: none; }
+
+  .ov-pi { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 40px; color: var(--pi-gold); }
+  .ov-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 24px; color: var(--pi-gold); letter-spacing: 2px; text-align: center; }
+  .ov-sub { font-size: 11px; color: var(--pi-muted); letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+  .ov-big { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; color: var(--pi-green); line-height: 1; }
+  .ov-pi-earned { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; color: var(--pi-gold); }
+  .ov-info { font-size: 11px; color: var(--pi-muted); }
+
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--pi-border);
+  }
+
+  .btn-play {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    background: var(--pi-green);
+    color: #0A0E1A;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn-play:active { opacity: 0.85; transform: scale(0.97); }
+
+  /* Floating score popup */
+  .float-score {
+    position: absolute;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    pointer-events: none;
+    animation: floatUp 0.9s ease-out forwards;
+    z-index: 20;
+    white-space: nowrap;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    60%  { opacity: 1; transform: translateY(-28px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-50px) scale(0.9); }
+  }
+
+  /* ── D-PAD CONTROLS ── */
+  .controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 5px;
+    width: 160px;
+    height: 96px;
+  }
+
+  .d-btn {
+    background: var(--pi-surface);
+    border: 1px solid var(--pi-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--pi-text);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.08s, border-color 0.08s, transform 0.08s;
+    touch-action: manipulation;
+  }
+
+  .d-btn.spacer {
+    pointer-events: none;
+    background: transparent;
+    border: none;
+  }
+
+  .d-btn:active, .d-btn.pressed {
+    background: rgba(6, 214, 160, 0.18);
+    border-color: var(--pi-green);
+    transform: scale(0.92);
+  }
+
+  .hint {
+    font-size: 9px;
+    color: var(--pi-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* Level badge */
+  .level-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(17,138,178,0.2);
+    color: #118AB2;
+    border: 1px solid rgba(17,138,178,0.3);
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-brand">
+      <div class="pi-logo">π</div>
+      <div class="brand-text">
+        <div class="brand-name">SNAKE</div>
+        <div class="brand-sub">Pi Network App</div>
+      </div>
+    </div>
+    <div class="hud-scores">
+      <div class="score-block">
+        <div class="score-label">Score</div>
+        <div class="score-val" id="hud-score">0</div>
+      </div>
+      <div class="score-block">
+        <div class="score-label">Best</div>
+        <div class="score-val" id="hud-best">0</div>
+      </div>
+      <div class="score-block">
+        <div class="score-label">π Earned</div>
+        <div class="score-val pi" id="hud-pi">0.000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARENA -->
+  <div class="arena-wrap" id="arena-wrap">
+    <canvas id="canvas"></canvas>
+    <div class="level-badge" id="level-badge">Lv 1</div>
+
+    <!-- Floating score elements injected by JS here -->
+
+    <!-- Start overlay -->
+    <div class="overlay" id="ov-start">
+      <div class="ov-pi">π</div>
+      <div class="ov-title">Pi Snake</div>
+      <div class="ov-sub">Uždirbk Pi žaisdamas</div>
+      <div class="divider"></div>
+      <button class="btn-play" id="btn-start">Žaisti</button>
+      <div class="ov-info" id="ov-best-msg"></div>
+    </div>
+
+    <!-- Game over overlay -->
+    <div class="overlay hidden" id="ov-dead">
+      <div class="ov-sub">Žaidimas baigtas</div>
+      <div class="ov-big" id="dead-score">0</div>
+      <div class="ov-pi-earned">+<span id="dead-pi">0.000</span> π</div>
+      <div class="divider"></div>
+      <button class="btn-play" id="btn-restart">Vėl žaisti</button>
+      <div class="ov-info" id="dead-best-msg"></div>
+    </div>
+
+    <!-- Paused overlay -->
+    <div class="overlay hidden" id="ov-pause">
+      <div class="ov-title">Pauzė</div>
+      <button class="btn-play" id="btn-resume">Tęsti</button>
+    </div>
+  </div>
+
+  <!-- D-PAD -->
+  <div class="controls">
+    <div class="dpad">
+      <div class="d-btn spacer"></div>
+      <div class="d-btn" id="btn-up">▲</div>
+      <div class="d-btn spacer"></div>
+      <div class="d-btn" id="btn-left">◀</div>
+      <div class="d-btn" id="btn-down">▼</div>
+      <div class="d-btn" id="btn-right">▶</div>
+    </div>
+    <div class="hint">Mygtukai · Rodyklės · Swipe</div>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────
+const COLS = 21, ROWS = 19, CELL = 20;
+const BASE_SPEED = 150;
+const PI_RATE = 0.001;
+const SPEED_STEP = 10;
+const SPEED_FLOOR = 75;
+
+// ── STATE ──────────────────────────────────────────
+let snake, dir, nextDir, food, piFood;
+let score, best, piEarned, piSession;
+let speed, gameLoopId, running, animId;
+let level;
+
+best = 0; piSession = 0;
+
+// ── CANVAS SETUP ───────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const arenaWrap = document.getElementById('arena-wrap');
+
+function resizeCanvas() {
+  const w = arenaWrap.clientWidth;
+  const h = arenaWrap.clientHeight;
+  const cellW = Math.floor(w / COLS);
+  const cellH = Math.floor(h / ROWS);
+  const cell = Math.min(cellW, cellH, CELL);
+  canvas.width = COLS * cell;
+  canvas.height = ROWS * cell;
+  if (running) draw();
+}
+
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 100);
+
+function cellSize() { return canvas.width / COLS; }
+
+// ── HELPERS ──────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function rnd(max) { return Math.floor(Math.random() * max); }
+
+function freePos() {
+  let p, attempts = 0;
+  do {
+    p = { x: rnd(COLS), y: rnd(ROWS) };
+    attempts++;
+    if (attempts > 500) break;
+  } while (
+    snake.some(s => s.x === p.x && s.y === p.y) ||
+    (food && p.x === food.x && p.y === food.y) ||
+    (piFood && p.x === piFood.x && p.y === piFood.y)
+  );
+  return p;
+}
+
+// ── INIT GAME ──────────────────────────────────────
+function init() {
+  const cx = Math.floor(COLS / 2), cy = Math.floor(ROWS / 2);
+  snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
+  dir = { x: 1, y: 0 };
+  nextDir = { x: 1, y: 0 };
+  score = 0; piEarned = 0; level = 1;
+  speed = BASE_SPEED;
+  food = freePos();
+  piFood = null;
+  updateHUD();
+  updateLevel();
+}
+
+// ── HUD ──────────────────────────────────────────
+function updateHUD() {
+  $('hud-score').textContent = score;
+  $('hud-best').textContent = best;
+  $('hud-pi').textContent = piEarned.toFixed(3);
+}
+
+function updateLevel() {
+  level = Math.floor(score / 50) + 1;
+  $('level-badge').textContent = 'Lv ' + level;
+}
+
+// ── GAME STEP ──────────────────────────────────────
+function step() {
+  if (!running) return;
+
+  dir = { x: nextDir.x, y: nextDir.y };
+  const head = {
+    x: ((snake[0].x + dir.x) + COLS) % COLS,
+    y: ((snake[0].y + dir.y) + ROWS) % ROWS
+  };
+
+  // Self collision
+  if (snake.some(s => s.x === head.x && s.y === head.y)) {
+    endGame();
+    return;
+  }
+
+  snake.unshift(head);
+  let ate = false;
+
+  // Eat regular food
+  if (head.x === food.x && head.y === food.y) {
+    score += 10;
+    ate = true;
+    piEarned += PI_RATE * 10;
+    food = freePos();
+    if (score % 50 === 0) {
+      speed = Math.max(SPEED_FLOOR, speed - SPEED_STEP);
+      restartLoop();
+    }
+    updateLevel();
+    maybeSpawnPiFood();
+    showFloat(head, '+10', '#06D6A0');
+  }
+
+  // Eat pi food
+  if (piFood && head.x === piFood.x && head.y === piFood.y) {
+    score += 50;
+    ate = true;
+    piEarned += PI_RATE * 50;
+    piFood = null;
+    showFloat(head, '+π 50', '#FFD166');
+    updateLevel();
+  }
+
+  if (!ate) snake.pop();
+  if (score > best) best = score;
+  updateHUD();
+  draw();
+}
+
+function maybeSpawnPiFood() {
+  if (!piFood && Math.random() < 0.3) {
+    piFood = freePos();
+    // Pi food disappears after 8 seconds
+    setTimeout(() => { piFood = null; }, 8000);
+  }
+}
+
+// ── LOOP MANAGEMENT ──────────────────────────────────
+function startLoop() {
+  clearInterval(gameLoopId);
+  gameLoopId = setInterval(step, speed);
+}
+
+function restartLoop() {
+  clearInterval(gameLoopId);
+  gameLoopId = setInterval(step, speed);
+}
+
+function stopLoop() {
+  clearInterval(gameLoopId);
+}
+
+// ── DRAW ──────────────────────────────────────────
+const piPulse = { t: 0 };
+
+function draw() {
+  const C = cellSize();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawGrid(C);
+  drawFood(C);
+  if (piFood) drawPiFood(C);
+  drawSnake(C);
+}
+
+function drawGrid(C) {
+  ctx.strokeStyle = 'rgba(30,45,74,0.45)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x <= COLS; x++) {
+    ctx.beginPath(); ctx.moveTo(x * C, 0); ctx.lineTo(x * C, ROWS * C); ctx.stroke();
+  }
+  for (let y = 0; y <= ROWS; y++) {
+    ctx.beginPath(); ctx.moveTo(0, y * C); ctx.lineTo(COLS * C, y * C); ctx.stroke();
+  }
+}
+
+function drawSnake(C) {
+  const len = snake.length;
+  snake.forEach((s, i) => {
+    const pct = i / len;
+    if (i === 0) {
+      ctx.fillStyle = '#06D6A0';
+    } else {
+      const g = Math.round(214 * (1 - pct * 0.55));
+      const b = Math.round(160 * (1 - pct * 0.5));
+      ctx.fillStyle = `rgb(6,${g},${b})`;
+    }
+    const r = i === 0 ? 5 : 3;
+    ctx.beginPath();
+    ctx.roundRect(s.x * C + 1, s.y * C + 1, C - 2, C - 2, r);
+    ctx.fill();
+
+    // Eyes on head
+    if (i === 0) {
+      ctx.fillStyle = '#0A0E1A';
+      let ex1, ey1, ex2, ey2;
+      if (dir.x === 1)       { ex1 = s.x*C + C-4; ey1 = s.y*C + 4;   ex2 = s.x*C + C-4; ey2 = s.y*C + C-4; }
+      else if (dir.x === -1) { ex1 = s.x*C + 4;   ey1 = s.y*C + 4;   ex2 = s.x*C + 4;   ey2 = s.y*C + C-4; }
+      else if (dir.y === -1) { ex1 = s.x*C + 4;   ey1 = s.y*C + 4;   ex2 = s.x*C + C-4; ey2 = s.y*C + 4; }
+      else                   { ex1 = s.x*C + 4;   ey1 = s.y*C + C-4; ex2 = s.x*C + C-4; ey2 = s.y*C + C-4; }
+      ctx.beginPath(); ctx.arc(ex1, ey1, 2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex2, ey2, 2, 0, Math.PI*2); ctx.fill();
+    }
+  });
+}
+
+function drawFood(C) {
+  const fx = food.x * C + C/2, fy = food.y * C + C/2, r = C * 0.3;
+  // Glow ring
+  ctx.fillStyle = 'rgba(239,71,111,0.15)';
+  ctx.beginPath(); ctx.arc(fx, fy, r + 4, 0, Math.PI*2); ctx.fill();
+  // Apple body
+  ctx.fillStyle = '#EF476F';
+  ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI*2); ctx.fill();
+  // Highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.beginPath(); ctx.arc(fx - r*0.3, fy - r*0.3, r*0.3, 0, Math.PI*2); ctx.fill();
+  // Stem
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(fx, fy - r); ctx.lineTo(fx + 2, fy - r - 4); ctx.stroke();
+}
+
+function drawPiFood(C) {
+  const fx = piFood.x * C + C/2, fy = piFood.y * C + C/2;
+  const t = Date.now() / 500;
+  const r = C * 0.32 + Math.sin(t) * 1.5;
+  // Outer pulse
+  ctx.fillStyle = `rgba(255,209,102,${0.08 + Math.sin(t)*0.05})`;
+  ctx.beginPath(); ctx.arc(fx, fy, r + 8, 0, Math.PI*2); ctx.fill();
+  // Mid glow
+  ctx.fillStyle = 'rgba(255,209,102,0.2)';
+  ctx.beginPath(); ctx.arc(fx, fy, r + 4, 0, Math.PI*2); ctx.fill();
+  // Pi coin
+  ctx.fillStyle = '#FFD166';
+  ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI*2); ctx.fill();
+  // Pi symbol
+  ctx.fillStyle = '#0A0E1A';
+  ctx.font = `bold ${Math.round(C * 0.55)}px Orbitron, monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('π', fx, fy + 1);
+}
+
+// ── FLOAT SCORE POPUP ──────────────────────────────
+function showFloat(cell, text, color) {
+  const C = cellSize();
+  const el = document.createElement('div');
+  el.className = 'float-score';
+  el.textContent = text;
+  el.style.color = color;
+  el.style.left = (cell.x * C + C/2) + 'px';
+  el.style.top = (cell.y * C - 4) + 'px';
+  el.style.transform = 'translateX(-50%)';
+  arenaWrap.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+// ── GAME LIFECYCLE ──────────────────────────────────
+function startGame() {
+  $('ov-start').classList.add('hidden');
+  $('ov-dead').classList.add('hidden');
+  $('ov-pause').classList.add('hidden');
+  resizeCanvas();
+  init();
+  running = true;
+  draw();
+  startLoop();
+}
+
+function endGame() {
+  running = false;
+  stopLoop();
+  piSession += piEarned;
+  $('dead-score').textContent = score;
+  $('dead-pi').textContent = piEarned.toFixed(3);
+  $('dead-best-msg').textContent = score >= best ? '🏆 Naujas rekordas!' : 'Rekordas: ' + best;
+  $('ov-dead').classList.remove('hidden');
+}
+
+function pauseGame() {
+  if (!running) return;
+  running = false;
+  stopLoop();
+  $('ov-pause').classList.remove('hidden');
+}
+
+function resumeGame() {
+  running = true;
+  $('ov-pause').classList.add('hidden');
+  startLoop();
+}
+
+// ── BUTTON EVENTS ──────────────────────────────────
+$('btn-start').addEventListener('click', startGame);
+$('btn-restart').addEventListener('click', startGame);
+$('btn-resume').addEventListener('click', resumeGame);
+
+function bindDpad(id, dx, dy) {
+  const btn = $(id);
+  function press(e) {
+    e.preventDefault();
+    btn.classList.add('pressed');
+    if (!(dir.x === -dx && dir.y === -dy)) {
+      nextDir = { x: dx, y: dy };
+    }
+  }
+  function release() { btn.classList.remove('pressed'); }
+  btn.addEventListener('touchstart', press, { passive: false });
+  btn.addEventListener('touchend', release, { passive: true });
+  btn.addEventListener('mousedown', press);
+  btn.addEventListener('mouseup', release);
+}
+
+bindDpad('btn-up',    0, -1);
+bindDpad('btn-down',  0,  1);
+bindDpad('btn-left', -1,  0);
+bindDpad('btn-right', 1,  0);
+
+// ── KEYBOARD ──────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (!running) return;
+  const map = {
+    'ArrowUp': [0,-1], 'w': [0,-1], 'W': [0,-1],
+    'ArrowDown': [0,1], 's': [0,1], 'S': [0,1],
+    'ArrowLeft': [-1,0], 'a': [-1,0], 'A': [-1,0],
+    'ArrowRight': [1,0], 'd': [1,0], 'D': [1,0],
+    'Escape': null, 'p': null, 'P': null
+  };
+  if (!(e.key in map)) return;
+  if (map[e.key] === null) {
+    running ? pauseGame() : resumeGame();
+    return;
+  }
+  const [dx, dy] = map[e.key];
+  if (!(dir.x === -dx && dir.y === -dy)) {
+    nextDir = { x: dx, y: dy };
+  }
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+  }
+});
+
+// ── SWIPE ──────────────────────────────────────────
+let touchStart = null;
+
+document.addEventListener('touchstart', e => {
+  if (e.target.closest('.d-btn') || e.target.closest('.btn-play')) return;
+  touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!touchStart || !running) return;
+  if (e.target.closest('.d-btn') || e.target.closest('.btn-play')) return;
+  const dx = e.changedTouches[0].clientX - touchStart.x;
+  const dy = e.changedTouches[0].clientY - touchStart.y;
+  const threshold = 30;
+  if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) return;
+  let ndx = 0, ndy = 0;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    ndx = dx > 0 ? 1 : -1;
+  } else {
+    ndy = dy > 0 ? 1 : -1;
+  }
+  if (!(dir.x === -ndx && dir.y === -ndy)) {
+    nextDir = { x: ndx, y: ndy };
+  }
+  touchStart = null;
+}, { passive: true });
+
+// ── ANIMATION LOOP (for Pi food pulse) ──────────────
+function animFrame() {
+  if (running && piFood) draw();
+  requestAnimationFrame(animFrame);
+}
+requestAnimationFrame(animFrame);
+
+// ── PREVENT SCROLL ──────────────────────────────────
+document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+</script>
+</body>
+</html>
