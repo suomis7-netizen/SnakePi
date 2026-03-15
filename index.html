@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -21,14 +21,12 @@
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   font-family:'Share Tech Mono',monospace;touch-action:none;
   -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-
 #app{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;
   justify-content:space-between;padding:8px 10px calc(8px + var(--safe-b));
   max-width:480px;margin:0 auto;position:relative}
 #app::before{content:'';position:fixed;inset:0;
   background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(6,214,160,0.05) 0%,transparent 70%);
   pointer-events:none;z-index:0}
-
 .hud{width:100%;display:flex;align-items:center;justify-content:space-between;
   padding:7px 12px;background:var(--surf);border:1px solid var(--bdr);
   border-radius:12px;position:relative;z-index:1;flex-shrink:0}
@@ -41,12 +39,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .sl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
 .sv{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;line-height:1.1}
 .sv.gold{color:var(--gold)}
-
 .arena-wrap{position:relative;border-radius:12px;overflow:hidden;
   border:1px solid var(--bdr);flex:1;display:flex;align-items:center;
   justify-content:center;width:100%;z-index:1;margin:7px 0}
 #canvas{display:block;max-width:100%;max-height:100%}
-
 .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:11px;background:rgba(10,14,26,0.93);z-index:10;padding:14px}
 .ov.hidden{display:none}
@@ -57,16 +53,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ov-pi{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--gold)}
 .ov-info{font-size:11px;color:var(--muted);text-align:center}
 .divider{width:50px;height:1px;background:var(--bdr)}
-
 .btn{font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;
   border:none;padding:11px 24px;border-radius:10px;cursor:pointer;text-transform:uppercase;
   -webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .1s;width:100%;max-width:240px}
 .btn:active{opacity:.85;transform:scale(.97)}
 .btn-green{background:var(--g);color:#0A0E1A}
-.btn-gold{background:var(--gold);color:#0A0E1A}
 .btn-outline{background:transparent;color:var(--txt);border:1px solid var(--bdr)}
 .btn-sm{padding:8px 16px;font-size:10px;width:auto}
-
 .revive-row{display:flex;gap:8px;width:100%;max-width:260px}
 .revive-card{flex:1;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
   padding:9px 6px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
@@ -75,13 +68,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .rc-title{font-size:10px;font-weight:500;color:var(--txt);letter-spacing:.5px}
 .rc-sub{font-size:9px;color:var(--muted);margin-top:2px}
 .revive-used{opacity:.3;pointer-events:none}
-
 .donate-grid{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:100%;max-width:260px}
 .donate-btn{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;
   padding:6px 13px;font-size:12px;color:var(--gold);cursor:pointer;
   font-family:'Share Tech Mono',monospace;transition:background .12s,border-color .12s}
 .donate-btn:active{background:rgba(255,209,102,.1);border-color:var(--gold)}
-
 .lb-wrap{width:100%;max-width:260px;display:flex;flex-direction:column;gap:3px;max-height:170px;overflow-y:auto}
 .lb-row{display:flex;align-items:center;gap:8px;padding:5px 9px;
   background:var(--surf);border-radius:8px;border:1px solid var(--bdr)}
@@ -90,18 +81,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .lb-name{flex:1;font-size:11px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-score{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--g);font-weight:700}
 .lb-you{border-color:rgba(6,214,160,.4);background:rgba(6,214,160,.05)}
-
 .float-sc{position:absolute;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
   pointer-events:none;animation:floatUp .9s ease-out forwards;z-index:20;white-space:nowrap;transform:translateX(-50%)}
 @keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}
   60%{opacity:1;transform:translateX(-50%) translateY(-26px) scale(1.1)}
   100%{opacity:0;transform:translateX(-50%) translateY(-46px) scale(.9)}}
-
 .ad-bar{width:100%;height:36px;background:var(--surf);border:1px solid var(--bdr);
   border-radius:8px;display:flex;align-items:center;justify-content:center;
   font-size:11px;color:var(--muted);position:relative;overflow:hidden}
 .ad-prog{position:absolute;left:0;top:0;height:100%;background:rgba(6,214,160,.1);transition:width .1s linear}
-
 .controls{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;z-index:1}
 .dpad{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:148px;height:88px}
 .d-btn{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;
@@ -111,11 +99,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .d-btn.spacer{pointer-events:none;background:transparent;border:none}
 .d-btn:active,.d-btn.pressed{background:rgba(6,214,160,.18);border-color:var(--g);transform:scale(.92)}
 .hint{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-
 .level-badge{position:absolute;top:7px;right:7px;font-family:'Orbitron',sans-serif;font-size:9px;
   font-weight:700;background:rgba(17,138,178,.2);color:var(--blue);
   border:1px solid rgba(17,138,178,.3);padding:3px 7px;border-radius:20px;letter-spacing:1px}
-
 .tab-row{display:flex;gap:3px;background:var(--surf);border-radius:8px;padding:3px;width:100%;max-width:260px}
 .tab-btn{flex:1;padding:6px 2px;font-size:10px;font-family:'Orbitron',sans-serif;font-weight:700;
   letter-spacing:.5px;text-transform:uppercase;background:transparent;border:none;color:var(--muted);
@@ -152,88 +138,91 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     <div class="ov" id="ov-start">
       <div class="ov-logo">π</div>
       <div class="ov-title">Pi Snake</div>
-      <div class="ov-sub">Uždirbk Pi žaisdamas</div>
-      <div class="user-tag">Vartotojas: <span id="user-name">Svečias</span></div>
-      <button class="btn btn-green" id="btn-start">Žaisti</button>
-      <button class="btn btn-outline btn-sm" onclick="openLBFromStart()">🏆 Lyderiai</button>
+      <div class="ov-sub">Earn Pi while you play</div>
+      <div class="user-tag">Player: <span id="user-name">Guest</span></div>
+      <button class="btn btn-green" id="btn-start">Play</button>
+      <button class="btn btn-outline btn-sm" onclick="openLBFromStart()">🏆 Leaderboard</button>
       <div class="ov-info" id="start-best"></div>
     </div>
 
     <!-- GAME OVER -->
     <div class="ov hidden" id="ov-dead">
-      <div class="ov-sub">Žaidimas baigtas</div>
+      <div class="ov-sub">Game Over</div>
       <div class="ov-big" id="dead-score">0</div>
-      <div class="ov-pi">+<span id="dead-pi">0.000</span> π uždirbta</div>
+      <div class="ov-pi">+<span id="dead-pi">0.000</span> π earned</div>
       <div class="divider"></div>
       <div class="tab-row">
-        <button class="tab-btn active" onclick="switchTab('revive')">Tęsti</button>
-        <button class="tab-btn" onclick="switchTab('donate')">Paremti</button>
-        <button class="tab-btn" onclick="switchTab('lb')">Lyderiai</button>
+        <button class="tab-btn active" onclick="switchTab('revive')">Continue</button>
+        <button class="tab-btn" onclick="switchTab('donate')">Support</button>
+        <button class="tab-btn" onclick="switchTab('lb')">Leaders</button>
       </div>
 
+      <!-- REVIVE TAB -->
       <div class="tab-content active" id="tab-revive">
-        <div class="ov-sub" style="font-size:9px">Tęsti žaidimą?</div>
+        <div class="ov-sub" style="font-size:9px">Continue from here?</div>
         <div class="revive-row">
           <div class="revive-card" id="revive-ad" onclick="reviveAd()">
             <div class="rc-icon">📺</div>
-            <div class="rc-title">Reklama</div>
-            <div class="rc-sub">30 sek → nemokama</div>
+            <div class="rc-title">Watch Ad</div>
+            <div class="rc-sub">30 sec → free</div>
           </div>
           <div class="revive-card" id="revive-pi" onclick="revivePi()">
             <div class="rc-icon">π</div>
-            <div class="rc-title">Mokėti 1π</div>
-            <div class="rc-sub">Momentinis tęsimas</div>
+            <div class="rc-title">Pay 1π</div>
+            <div class="rc-sub">Instant continue</div>
           </div>
         </div>
-        <button class="btn btn-green" onclick="startGame()">Naujas žaidimas</button>
+        <button class="btn btn-green" onclick="startGame()">New Game</button>
         <div class="ov-info" id="dead-best"></div>
       </div>
 
+      <!-- DONATE TAB -->
       <div class="tab-content" id="tab-donate">
-        <div class="ov-sub" style="font-size:9px">Paremk kūrėją π</div>
+        <div class="ov-sub" style="font-size:9px">Support the developer</div>
         <div class="donate-grid">
           <button class="donate-btn" onclick="donate(1)">☕ 1π</button>
           <button class="donate-btn" onclick="donate(3)">🍕 3π</button>
           <button class="donate-btn" onclick="donate(5)">🚀 5π</button>
           <button class="donate-btn" onclick="donate(10)">👑 10π</button>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="switchTab('revive')">← Atgal</button>
+        <button class="btn btn-outline btn-sm" onclick="switchTab('revive')">← Back</button>
       </div>
 
+      <!-- LEADERBOARD TAB -->
       <div class="tab-content" id="tab-lb">
         <div class="lb-wrap" id="lb-list"></div>
-        <button class="btn btn-outline btn-sm" onclick="switchTab('revive')">← Atgal</button>
+        <button class="btn btn-outline btn-sm" onclick="switchTab('revive')">← Back</button>
       </div>
     </div>
 
     <!-- PAUSE -->
     <div class="ov hidden" id="ov-pause">
-      <div class="ov-title">Pauzė</div>
-      <button class="btn btn-green" onclick="resumeGame()">Tęsti</button>
+      <div class="ov-title">Paused</div>
+      <button class="btn btn-green" onclick="resumeGame()">Resume</button>
     </div>
 
     <!-- AD WATCH -->
     <div class="ov hidden" id="ov-ad">
-      <div class="ov-sub">Žiūri reklamą</div>
+      <div class="ov-sub">Watching ad</div>
       <div class="ad-bar" style="width:220px">
         <div class="ad-prog" id="ad-prog"></div>
         <span id="ad-countdown" style="position:relative;z-index:1">30</span>
       </div>
-      <div class="ov-info">Neišeik iš puslapio...</div>
+      <div class="ov-info">Please stay on the page...</div>
     </div>
 
     <!-- DONATE SUCCESS -->
     <div class="ov hidden" id="ov-thanks">
       <div style="font-size:32px">🙏</div>
-      <div class="ov-title" style="font-size:18px">Ačiū!</div>
-      <div class="ov-sub">Parama gauta</div>
+      <div class="ov-title" style="font-size:18px">Thank you!</div>
+      <div class="ov-sub">Support received</div>
     </div>
 
     <!-- LB FROM START -->
     <div class="ov hidden" id="ov-lb-start">
-      <div class="ov-sub">Lyderių lentelė</div>
+      <div class="ov-sub">Leaderboard</div>
       <div class="lb-wrap" id="lb-list-start"></div>
-      <button class="btn btn-outline btn-sm" onclick="closeLBStart()">← Atgal</button>
+      <button class="btn btn-outline btn-sm" onclick="closeLBStart()">← Back</button>
     </div>
   </div>
 
@@ -246,33 +235,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="d-btn" id="btn-down">▼</div>
       <div class="d-btn" id="btn-right">▶</div>
     </div>
-    <div class="hint">Mygtukai · Rodyklės · Swipe</div>
+    <div class="hint">Buttons · Arrow keys · Swipe</div>
   </div>
 
 </div>
 <script>
 // ═══ PI SDK ════════════════════════════════════════════
-// SVARBU: pakeisk "TAVO_PI_USERNAME" į savo Pi username
-const PI_DEVELOPER_USERNAME = "Huronas";
+const PI_DEVELOPER_USERNAME = "Huronas"; // your Pi username
+
 let piUser = null, piAuthenticated = false;
 
 function initPiSDK(){
   if(typeof Pi==='undefined'){
-    console.log('Pi SDK nera — demo rezimas');
+    console.log('Pi SDK not found — running in demo mode');
     document.getElementById('user-name').textContent='Demo';
     return;
   }
-  // sandbox: true — testavimui. Produkcijai: sandbox: false
+  // Change sandbox to false for production!
   Pi.init({version:"2.0", sandbox:true});
   Pi.authenticate(['username','payments'], auth=>{
     piUser=auth.user; piAuthenticated=true;
-    document.getElementById('user-name').textContent=piUser.username||'Pi vartotojas';
-  }, err=>console.log('Pi auth klaida:',err));
+    document.getElementById('user-name').textContent=piUser.username||'Pi User';
+  }, err=>console.log('Pi auth error:',err));
 }
 
 function piPayment(amount, memo, onSuccess){
   if(typeof Pi==='undefined'||!piAuthenticated){
-    showToast('Demo: '+amount+'π mokejimas sekmingai ✓');
+    showToast('Demo: '+amount+'π payment successful ✓');
     setTimeout(onSuccess,600);
     return;
   }
@@ -281,29 +270,29 @@ function piPayment(amount, memo, onSuccess){
     metadata:{game:'pi-snake',player:piUser?.username||'guest'}
   },{
     onReadyForServerApproval(paymentId){
-      // TODO: siusk i savo serveri patvirtinimui
+      // TODO: send paymentId to your server for approval
       // fetch('/api/approve', {method:'POST', body:JSON.stringify({paymentId})})
-      console.log('Reikia serverio patvirtinimo:', paymentId);
+      console.log('Waiting for server approval:', paymentId);
     },
     onReadyForServerCompletion(paymentId, txid){
-      // TODO: serveris turi patvirtinti tx
+      // TODO: your server must confirm the transaction
       // fetch('/api/complete', {method:'POST', body:JSON.stringify({paymentId,txid})})
-      console.log('Tx baigtas:', txid);
+      console.log('Transaction complete:', txid);
       onSuccess(txid);
     },
-    onCancel(paymentId){showToast('Mokejiams atsauktas')},
-    onError(err){showToast('Klaida: '+(err.message||'bandyk veliau'))}
+    onCancel(){ showToast('Payment cancelled') },
+    onError(err){ showToast('Error: '+(err.message||'please try again')) }
   });
 }
 
-// ═══ LEADERBOARD (localStorage) ═══════════════════════
-// Produkcijai: naudok Firebase / Supabase duomenu baze
+// ═══ LEADERBOARD ══════════════════════════════════════
+// For production: replace localStorage with Firebase / Supabase
 function getLB(){
   try{return JSON.parse(localStorage.getItem('pi_snake_lb')||'[]')}catch{return[]}
 }
 function saveScoreToLB(score){
   if(score<=0)return;
-  const name=piUser?.username||'Svecias';
+  const name=piUser?.username||'Guest';
   const lb=getLB();
   const idx=lb.findIndex(e=>e.name===name);
   if(idx>=0){if(score>lb[idx].score)lb[idx].score=score}
@@ -313,9 +302,12 @@ function saveScoreToLB(score){
 }
 function renderLB(elId='lb-list'){
   const lb=getLB();
-  const myName=piUser?.username||'Svecias';
+  const myName=piUser?.username||'Guest';
   const el=document.getElementById(elId);
-  if(!lb.length){el.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:14px">Dar nera rezultatu</div>';return}
+  if(!lb.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:14px">No scores yet — be the first!</div>';
+    return;
+  }
   const emojis=['🥇','🥈','🥉'];
   const cls=['gold','silver','bronze'];
   el.innerHTML=lb.slice(0,10).map((e,i)=>`
@@ -326,7 +318,7 @@ function renderLB(elId='lb-list'){
     </div>`).join('');
 }
 
-// ═══ CANVAS ════════════════════════════════════════════
+// ═══ CANVAS SETUP ══════════════════════════════════════
 const COLS=21,ROWS=19,PI_RATE=0.001;
 const BASE_SPEED=150,SPEED_FLOOR=75,SPEED_STEP=10;
 const canvas=document.getElementById('canvas');
@@ -454,7 +446,7 @@ function endGame(){
   running=false;stopLoop();saveScoreToLB(score);
   $('dead-score').textContent=score;
   $('dead-pi').textContent=piEarned.toFixed(3);
-  $('dead-best').textContent=score>=best?'🏆 Naujas rekordas!':'Rekordas: '+best;
+  $('dead-best').textContent=score>=best?'🏆 New record!':'Best: '+best;
   if(reviveUsed){$('revive-ad').classList.add('revive-used');$('revive-pi').classList.add('revive-used')}
   renderLB('lb-list');switchTab('revive');
   $('ov-dead').classList.remove('hidden');
@@ -468,7 +460,7 @@ function reviveAd(){
   $('ov-dead').classList.add('hidden');$('ov-ad').classList.remove('hidden');
   let secs=30;
   $('ad-countdown').textContent=secs;$('ad-prog').style.width='0%';
-  // Realiai: Pi Ads SDK arba kita reklamos platforma
+  // Replace this with your ad network SDK (Pi Ads / AdMob / etc.)
   const iv=setInterval(()=>{
     secs--;
     $('ad-countdown').textContent=secs;
@@ -478,18 +470,25 @@ function reviveAd(){
 }
 function revivePi(){
   if(reviveUsed)return;
-  piPayment(1,'Pi Snake Revive',()=>{$('ov-dead').classList.add('hidden');doRevive(true)});
+  piPayment(1,'Pi Snake — Continue playing',()=>{
+    $('ov-dead').classList.add('hidden');doRevive(true);
+  });
 }
 function doRevive(instant=false){
   reviveUsed=true;snake=snake.slice(0,3);
   running=true;draw();startLoop();
-  showToast(instant?'Tesi! Gera luck 🐍':'Reklama baigta! Zaisk toliau 🐍');
+  showToast(instant?'Revived! Keep going 🐍':'Ad finished! Keep playing 🐍');
 }
 
 // ═══ DONATE ════════════════════════════════════════════
 function donate(amount){
-  const m={1:'Pi Snake kava kurėjui ☕',3:'Pi Snake pica kurėjui 🍕',5:'Pi Snake rocket 🚀',10:'Pi Snake premium remejas 👑'};
-  piPayment(amount,m[amount]||'Pi Snake donatas',()=>{
+  const m={
+    1:'Pi Snake — Coffee for the developer ☕',
+    3:'Pi Snake — Pizza for the developer 🍕',
+    5:'Pi Snake — Rocket fuel 🚀',
+    10:'Pi Snake — Premium supporter 👑'
+  };
+  piPayment(amount,m[amount]||'Pi Snake donation',()=>{
     $('ov-dead').classList.add('hidden');$('ov-thanks').classList.remove('hidden');
     setTimeout(()=>{$('ov-thanks').classList.add('hidden');$('ov-dead').classList.remove('hidden')},2200);
   });
@@ -521,7 +520,7 @@ function showToast(msg){
   t.textContent=msg;arenaWrap.appendChild(t);setTimeout(()=>t.remove(),2500);
 }
 
-// ═══ DPAD ══════════════════════════════════════════════
+// ═══ CONTROLS ══════════════════════════════════════════
 function bindDpad(id,dx,dy){
   const btn=$(id);
   function press(e){e.preventDefault();btn.classList.add('pressed');if(!(dir.x===-dx&&dir.y===-dy))nextDir={x:dx,y:dy}}
@@ -557,15 +556,13 @@ document.addEventListener('touchend',e=>{
 },{passive:true});
 document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 
-// ═══ ANIM LOOP ═════════════════════════════════════════
 function animLoop(){if(running&&piFood)draw();requestAnimationFrame(animLoop)}
 requestAnimationFrame(animLoop);
 
-// ═══ INIT ══════════════════════════════════════════════
 $('btn-start').addEventListener('click',startGame);
 initPiSDK();
 const lb0=getLB();
-if(lb0.length)$('start-best').textContent='Rekordas: '+lb0[0].score+' ('+lb0[0].name+')';
+if(lb0.length)$('start-best').textContent='Top score: '+lb0[0].score+' by '+lb0[0].name;
 </script>
 </body>
 </html>
