@@ -1,2 +1,0 @@
-# SnakePi
-Snake
